@@ -1,0 +1,252 @@
+/* ===== Editor ===== */
+.editor {
+  width: 420px;
+  min-width: 360px;
+  background: var(--bg-card);
+  border-left: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.editor-empty {
+  width: 420px;
+  min-width: 360px;
+  background: var(--bg-card);
+  border-left: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-faint);
+  font-size: 13px;
+}
+
+.editor-header {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.editor-title-input {
+  width: 100%;
+  border: none;
+  background: transparent;
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--text);
+  outline: none;
+  padding: 2px 0;
+}
+.editor-title-input::placeholder {
+  color: var(--text-faint);
+}
+.editor-meta-grid {
+  display: grid;
+  grid-template-columns: 70px 1fr 70px 1fr;
+  gap: 6px 8px;
+  align-items: center;
+}
+.editor-meta-label {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+.editor-meta-grid .ui-select,
+.editor-meta-grid .ui-input {
+  padding: 3px 6px;
+  font-size: 12px;
+  height: 26px;
+}
+.editor-progress {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 4px;
+}
+.editor-progress input[type="range"] {
+  flex: 1;
+  accent-color: var(--accent);
+}
+.editor-progress-val {
+  font-size: 11px;
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+  min-width: 30px;
+  text-align: right;
+}
+
+.editor-tags {
+  grid-column: 2 / -1;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  align-items: center;
+}
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  background: var(--accent-soft);
+  color: var(--accent);
+  border-radius: 10px;
+  padding: 1px 8px;
+  font-size: 11px;
+}
+.chip button {
+  border: none;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  font-size: 11px;
+  padding: 0;
+  line-height: 1;
+  opacity: 0.6;
+}
+.chip button:hover {
+  opacity: 1;
+}
+.chip-input {
+  width: 70px;
+  border: none;
+  background: transparent;
+  outline: none;
+  font-size: 12px;
+  color: var(--text);
+}
+.chip-input::placeholder {
+  color: var(--text-faint);
+}
+
+.editor-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 4px;
+}
+.editor-dates {
+  font-size: 10.5px;
+  color: var(--text-faint);
+}
+.editor-delete-btn {
+  border: none;
+  background: transparent;
+  color: var(--danger);
+  cursor: pointer;
+  font-size: 12px;
+  padding: 3px 8px;
+  border-radius: var(--radius-sm);
+}
+.editor-delete-btn:hover {
+  background: var(--danger-soft);
+}
+.editor-history-btn {
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: 12px;
+  padding: 3px 8px;
+  border-radius: var(--radius-sm);
+}
+.editor-history-btn:hover {
+  background: var(--bg-hover);
+  color: var(--accent);
+}
+
+/* Markdown editor split */
+.md-editor {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.md-tabs {
+  display: flex;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-elev);
+}
+.md-tab {
+  flex: 1;
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  padding: 7px;
+  font-size: 12px;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: all 0.12s;
+}
+.md-tab-active {
+  color: var(--accent);
+  border-bottom-color: var(--accent);
+  background: var(--bg-card);
+}
+.md-body {
+  flex: 1;
+  overflow: hidden;
+  display: flex;
+}
+.md-textarea {
+  flex: 1;
+  border: none;
+  outline: none;
+  resize: none;
+  padding: 14px 16px;
+  background: var(--bg-card);
+  color: var(--text);
+  font-family: "SF Mono", Menlo, Consolas, monospace;
+  font-size: 13px;
+  line-height: 1.6;
+  user-select: text;
+}
+.md-preview {
+  flex: 1;
+  padding: 14px 16px;
+  overflow-y: auto;
+  border-left: 1px solid var(--border);
+  background: var(--bg);
+  user-select: text;
+  line-height: 1.6;
+  font-size: 13px;
+  color: var(--text);
+}
+.md-preview h1, .md-preview h2, .md-preview h3 {
+  margin: 0.8em 0 0.4em;
+}
+.md-preview p { margin: 0.4em 0; }
+.md-preview ul, .md-preview ol { padding-left: 1.4em; margin: 0.4em 0; }
+.md-preview code {
+  background: var(--bg-elev);
+  padding: 1px 5px;
+  border-radius: 3px;
+  font-size: 12px;
+}
+.md-preview pre {
+  background: var(--bg-elev);
+  padding: 10px;
+  border-radius: var(--radius-sm);
+  overflow-x: auto;
+}
+.md-preview pre code {
+  background: transparent;
+  padding: 0;
+}
+.md-preview blockquote {
+  border-left: 3px solid var(--accent);
+  margin: 0.5em 0;
+  padding: 2px 10px;
+  color: var(--text-muted);
+}
+.md-preview a { color: var(--accent); }
+.md-preview input[type="checkbox"] {
+  margin-right: 5px;
+  accent-color: var(--accent);
+}
+.md-save-status {
+  position: absolute;
+  top: 6px;
+  right: 8px;
+  font-size: 10px;
+  color: var(--text-faint);
+  pointer-events: none;
+}

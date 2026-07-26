@@ -1,0 +1,45 @@
+import { useDroppable } from '@dnd-kit/core';
+import type { Quadrant, Todo } from '../../types/todo';
+import { QUADRANT_LABELS } from '../../types/todo';
+import { TodoCard } from './TodoCard';
+import { cx } from '../../lib/classnames';
+
+interface Props {
+  q: Quadrant;
+  todos: Todo[];
+  selectedId: string | null;
+  onSelect: (id: string) => void;
+}
+
+export function QuadrantColumn({ q, todos, selectedId, onSelect }: Props) {
+  const { setNodeRef, isOver } = useDroppable({ id: q });
+  const info = QUADRANT_LABELS[q];
+
+  return (
+    <div
+      ref={setNodeRef}
+      className={cx('quadrant', isOver && 'is-over')}
+      data-q={q}
+    >
+      <div className="quadrant-header">
+        <span className="quadrant-title">{info.title}</span>
+        <span className="quadrant-subtitle">{info.subtitle}</span>
+        <span className="quadrant-count">{todos.length}</span>
+      </div>
+      <div className="quadrant-body">
+        {todos.length === 0 ? (
+          <div className="quadrant-empty">拖入或新建事项</div>
+        ) : (
+          todos.map((t) => (
+            <TodoCard
+              key={t.id}
+              todo={t}
+              selected={selectedId === t.id}
+              onClick={() => onSelect(t.id)}
+            />
+          ))
+        )}
+      </div>
+    </div>
+  );
+}

@@ -1,0 +1,100 @@
+/* ===== Theme variables ===== */
+:root,
+[data-theme="light"] {
+  --bg: #ffffff;
+  --bg-elev: #f7f7f8;
+  --bg-card: #ffffff;
+  --bg-hover: #f0f1f3;
+  --border: #e5e7eb;
+  --text: #1f2328;
+  --text-muted: #6b7280;
+  --text-faint: #9ca3af;
+  --accent: #2563eb;
+  --accent-fg: #ffffff;
+  --accent-soft: #dbeafe;
+  --danger: #dc2626;
+  --danger-soft: #fee2e2;
+  --success: #16a34a;
+  --warning: #d97706;
+  --q1: #fee2e2;
+  --q2: #dbeafe;
+  --q3: #fef3c7;
+  --q4: #e5e7eb;
+  --shadow: 0 1px 2px rgba(0, 0, 0, 0.06), 0 1px 3px rgba(0, 0, 0, 0.08);
+  --shadow-lg: 0 4px 12px rgba(0, 0, 0, 0.12);
+  --radius: 8px;
+  --radius-sm: 4px;
+  --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Microsoft YaHei", sans-serif;
+}
+
+[data-theme="dark"] {
+  --bg: #0f1115;
+  --bg-elev: #171a21;
+  --bg-card: #1c2029;
+  --bg-hover: #232834;
+  --border: #2a2f3a;
+  --text: #e6e7ea;
+  --text-muted: #9aa0aa;
+  --text-faint: #6b7280;
+  --accent: #60a5fa;
+  --accent-fg: #0b1220;
+  --accent-soft: #1e3a8a;
+  --danger: #f87171;
+  --danger-soft: #7f1d1d;
+  --success: #4ade80;
+  --warning: #fbbf24;
+  --q1: #3b1818;
+  --q2: #1e3a5f;
+  --q3: #4a3810;
+  --q4: #272a33;
+  --shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+  --shadow-lg: 0 6px 16px rgba(0, 0, 0, 0.5);
+}
+
+[data-theme="eyecare"] {
+  --bg: #c7e6c7;
+  --bg-elev: #b6dcb6;
+  --bg-card: #d8efd8;
+  --bg-hover: #c2e2c2;
+  --border: #8fbf8f;
+  --text: #1f3a1f;
+  --text-muted: #4a6b4a;
+  --text-faint: #6b8a6b;
+  --accent: #2f6f2f;
+  --accent-fg: #ffffff;
+  --accent-soft: #a8d8a8;
+  --danger: #b91c1c;
+  --danger-soft: #fca5a5;
+  --success: #15803d;
+  --warning: #b45309;
+  --q1: #fca5a5;
+  --q2: #93c5fd;
+  --q3: #fcd34d;
+  --q4: #a8bfa8;
+  --shadow: 0 1px 3px rgba(47, 111, 47, 0.15);
+  --shadow-lg: 0 4px 12px rgba(47, 111, 47, 0.2);
+}
+
+[data-theme="evernote"] {
+  --bg: #f6f1e1;
+  --bg-elev: #efe8d0;
+  --bg-card: #fffdf5;
+  --bg-hover: #f0e8cf;
+  --border: #d8cfae;
+  --text: #2f2a1d;
+  --text-muted: #6f6749;
+  --text-faint: #a09572;
+  --accent: #2dbe60;
+  --accent-fg: #ffffff;
+  --accent-soft: #c7ecd5;
+  --danger: #c0392b;
+  --danger-soft: #f5b7b1;
+  --success: #1e8449;
+  --warning: #b9770e;
+  --q1: #f5b7b1;
+  --q2: #aed6f1;
+  --q3: #f9e79f;
+  --q4: #d5d8dc;
+  --shadow: 0 1px 3px rgba(47, 42, 29, 0.1);
+  --shadow-lg: 0 4px 12px rgba(47, 42, 29, 0.15);
+}
