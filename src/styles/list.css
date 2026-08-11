@@ -1,0 +1,255 @@
+/* ===== List view toolbar ===== */
+.list-wrapper {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+}
+.list-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 20px;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-elev);
+  min-height: 40px;
+}
+.list-toolbar-info {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+.list-toolbar-info strong {
+  color: var(--text);
+  font-weight: 600;
+}
+.list-toolbar-icon {
+  font-size: 12px;
+  opacity: 0.7;
+}
+.list-toolbar-actions {
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.list-sort {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.list-sort-label {
+  font-size: 11px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+.list-sort-select {
+  height: 28px;
+  font-size: 12px;
+  padding: 0 22px 0 8px;
+}
+.list-sort-dir {
+  width: 24px;
+  height: 24px;
+  border: 1px solid var(--border);
+  background: var(--bg-card);
+  color: var(--text);
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  line-height: 1;
+  cursor: pointer;
+  transition: background 0.12s, border-color 0.12s;
+}
+.list-sort-dir:hover {
+  background: var(--bg-hover);
+  border-color: var(--accent);
+}
+.list-reset-btn {
+  height: 28px;
+  padding: 0 10px;
+  font-size: 12px;
+}
+
+/* ===== MultiSelect trigger ===== */
+.multi-select-trigger {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  height: 28px;
+  padding: 0 8px;
+  border: 1px solid var(--border);
+  background: var(--bg-card);
+  color: var(--text-muted);
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+  cursor: pointer;
+  transition: border-color 0.12s, background 0.12s, color 0.12s;
+}
+.multi-select-trigger:hover {
+  border-color: var(--text-faint);
+  color: var(--text);
+}
+.multi-select-trigger.is-open,
+.multi-select-trigger.is-active {
+  border-color: var(--accent);
+  color: var(--text);
+  background: var(--accent-soft);
+}
+.multi-select-label {
+  line-height: 1;
+}
+.multi-select-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 16px;
+  height: 16px;
+  padding: 0 4px;
+  background: var(--accent);
+  color: var(--accent-fg);
+  border-radius: 8px;
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 1;
+}
+.multi-select-caret {
+  font-size: 9px;
+  opacity: 0.7;
+  margin-left: 1px;
+}
+
+/* ===== MultiSelect popover ===== */
+.multi-select-popover {
+  position: fixed;
+  z-index: 1000;
+  max-height: 320px;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-lg);
+  font-size: 13px;
+  color: var(--text);
+  user-select: none;
+  overflow: hidden;
+  animation: multi-select-in 0.12s ease-out;
+}
+@keyframes multi-select-in {
+  from { opacity: 0; transform: translateY(-4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.multi-select-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 10px;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-elev);
+}
+.multi-select-all {
+  border: none;
+  background: transparent;
+  color: var(--accent);
+  font-size: 12px;
+  cursor: pointer;
+  padding: 2px 4px;
+  border-radius: var(--radius-sm);
+}
+.multi-select-all:hover {
+  background: var(--bg-hover);
+}
+.multi-select-hint {
+  font-size: 11px;
+  color: var(--text-faint);
+}
+.multi-select-options {
+  overflow-y: auto;
+  padding: 4px 0;
+}
+.multi-select-option {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px;
+  cursor: pointer;
+  font-size: 12px;
+  color: var(--text);
+  transition: background 0.1s;
+}
+.multi-select-option:hover {
+  background: var(--bg-hover);
+}
+.multi-select-option input[type='checkbox'] {
+  margin: 0;
+  width: 14px;
+  height: 14px;
+  accent-color: var(--accent);
+  cursor: pointer;
+}
+.multi-select-option.is-checked .multi-select-option-label {
+  color: var(--text);
+  font-weight: 500;
+}
+.multi-select-option-label {
+  flex: 1;
+  color: var(--text-muted);
+}
+
+/* ===== Sortable table headers ===== */
+.todo-list th.sortable {
+  cursor: pointer;
+  user-select: none;
+  position: relative;
+  padding-right: 18px;
+}
+.todo-list th.sortable:hover {
+  color: var(--text);
+  background: var(--bg-hover);
+}
+.todo-list th .sort-arrow {
+  position: absolute;
+  right: 6px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 9px;
+  color: var(--text-faint);
+  letter-spacing: -1px;
+}
+.todo-list th.sortable.is-sorted {
+  color: var(--accent);
+}
+.todo-list th.sortable.is-sorted .sort-arrow {
+  color: var(--accent);
+}
+.todo-list th.sortable .sort-arrow .inactive {
+  opacity: 0.45;
+}
+
+/* ===== Empty state action ===== */
+.empty-action {
+  margin-top: 4px;
+}
+
+/* progress cell shows % next to bar */
+.todo-list td .list-progress-val {
+  display: inline-block;
+  margin-left: 8px;
+  font-size: 11px;
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+}
+.todo-list td:has(.list-progress) {
+  white-space: nowrap;
+}
+
+.list-footer-hint {
+  padding: 10px 4px 20px;
+  text-align: center;
+  font-size: 11px;
+  color: var(--text-faint);
+}

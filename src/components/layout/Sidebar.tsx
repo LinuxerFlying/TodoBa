@@ -23,13 +23,6 @@ export function Sidebar() {
 
   return (
     <>
-      <button
-        className="sidebar-toggle"
-        onClick={toggleSidebar}
-        title={sidebarOpen ? '收起侧栏' : '展开侧栏'}
-      >
-        {sidebarOpen ? '◀' : '▶'}
-      </button>
       <aside className={cx('sidebar', !sidebarOpen && 'sidebar-collapsed')}>
         <div className="sidebar-header">
           <SearchBar />
@@ -67,6 +60,14 @@ export function Sidebar() {
           <VaultPathSetting />
         </div>
       </aside>
+      <button
+        className="sidebar-toggle"
+        onClick={toggleSidebar}
+        title={sidebarOpen ? '收起侧栏' : '展开侧栏'}
+        aria-label={sidebarOpen ? '收起侧栏' : '展开侧栏'}
+      >
+        {sidebarOpen ? '◀' : '▶'}
+      </button>
     </>
   );
 }

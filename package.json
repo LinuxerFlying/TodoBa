@@ -1,7 +1,7 @@
 {
   "name": "todoba",
   "productName": "TodoBa",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Evernote-style Markdown todo manager with Eisenhower-matrix kanban and multi-theme support",
   "main": "out/main/index.js",
   "author": "TodoBa",
@@ -25,6 +25,7 @@
     "electron-store": "^8.2.0",
     "gray-matter": "^4.0.3",
     "js-yaml": "^4.1.0",
+    "magic-string": "^0.30.21",
     "marked": "^15.0.7",
     "nanoid": "^3.3.11",
     "react": "^18.3.1",
@@ -58,7 +59,9 @@
       "target": [
         {
           "target": "nsis",
-          "arch": ["x64"]
+          "arch": [
+            "x64"
+          ]
         }
       ],
       "signAndEditExecutable": false

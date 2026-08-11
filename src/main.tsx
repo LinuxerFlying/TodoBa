@@ -6,6 +6,8 @@ import './styles/global.css';
 import './styles/sidebar.css';
 import './styles/kanban.css';
 import './styles/editor.css';
+import './styles/datepicker.css';
+import './styles/list.css';
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>

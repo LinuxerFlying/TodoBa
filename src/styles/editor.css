@@ -159,11 +159,31 @@
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  min-height: 0;
+}
+.md-editor.is-fullscreen {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  width: 100vw;
+  height: 100vh;
+  background: var(--bg-card);
+  animation: md-fs-in 0.15s ease-out;
+}
+@keyframes md-fs-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
 }
 .md-tabs {
   display: flex;
+  align-items: center;
+  justify-content: space-between;
   border-bottom: 1px solid var(--border);
   background: var(--bg-elev);
+}
+.md-tabs-left {
+  display: flex;
+  flex: 1;
 }
 .md-tab {
   flex: 1;
@@ -181,10 +201,48 @@
   border-bottom-color: var(--accent);
   background: var(--bg-card);
 }
+.md-fullscreen-btn {
+  flex-shrink: 0;
+  margin-right: 6px;
+  padding: 3px 10px;
+  height: 24px;
+  border: 1px solid var(--border);
+  background: var(--bg-card);
+  color: var(--text-muted);
+  border-radius: var(--radius-sm);
+  font-size: 11px;
+  cursor: pointer;
+  transition: background 0.12s, color 0.12s, border-color 0.12s;
+}
+.md-fullscreen-btn:hover {
+  background: var(--bg-hover);
+  color: var(--text);
+  border-color: var(--accent);
+}
+.md-editor.is-fullscreen .md-tabs {
+  padding: 6px 10px;
+}
+.md-editor.is-fullscreen .md-tab {
+  flex: 0 1 120px;
+  padding: 8px 18px;
+  font-size: 13px;
+}
+.md-editor.is-fullscreen .md-fullscreen-btn {
+  height: 28px;
+  padding: 0 14px;
+  font-size: 12px;
+}
 .md-body {
   flex: 1;
   overflow: hidden;
   display: flex;
+  min-height: 0;
+}
+.md-editor.is-fullscreen .md-textarea,
+.md-editor.is-fullscreen .md-preview {
+  padding: 24px 32px;
+  font-size: 14px;
+  line-height: 1.75;
 }
 .md-textarea {
   flex: 1;

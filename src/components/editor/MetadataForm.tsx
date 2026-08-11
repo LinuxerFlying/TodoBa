@@ -2,6 +2,7 @@ import { useState } from 'react';
 import type { Todo, Quadrant, Status, Priority } from '../../types/todo';
 import { QUADRANT_LABELS, STATUS_LABELS, PRIORITY_LABELS, QUADRANT_ORDER } from '../../types/todo';
 import { ProgressSlider } from './ProgressSlider';
+import { DatePicker } from '../ui/DatePicker';
 
 interface Props {
   todo: Todo;
@@ -72,11 +73,10 @@ export function MetadataForm({ todo, onChange }: Props) {
         </select>
 
         <span className="editor-meta-label">截止</span>
-        <input
-          className="ui-input"
-          type="date"
-          value={todo.due || ''}
-          onChange={(e) => onChange({ due: e.target.value || undefined })}
+        <DatePicker
+          value={todo.due}
+          onChange={(v) => onChange({ due: v })}
+          placeholder="设置截止日期"
         />
 
         <span className="editor-meta-label">标签</span>
