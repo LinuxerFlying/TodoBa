@@ -31,6 +31,9 @@ const api = {
     pick: () => ipcRenderer.invoke('vault:pick'),
     scan: () => ipcRenderer.invoke('vault:scan')
   },
+  assets: {
+    import: () => ipcRenderer.invoke('assets:import')
+  },
   window: {
     minimize: () => ipcRenderer.invoke('window:minimize'),
     maximize: () => ipcRenderer.invoke('window:maximize'),
