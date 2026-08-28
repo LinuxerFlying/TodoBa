@@ -8,6 +8,7 @@ import { Toaster } from 'react-hot-toast';
 
 export function AppLayout() {
   const view = useUiStore((s) => s.view);
+  const editorOpen = useUiStore((s) => s.editorOpen);
   return (
     <div className="app-shell">
       <TitleBar />
@@ -16,7 +17,7 @@ export function AppLayout() {
         <main className="main-area">
           {view === 'kanban' ? <KanbanBoard /> : <TodoListView />}
         </main>
-        <TodoEditor />
+        {editorOpen && <TodoEditor />}
       </div>
       <Toaster
         position="bottom-right"

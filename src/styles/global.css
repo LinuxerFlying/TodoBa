@@ -119,6 +119,14 @@ input, textarea, select, button {
   background: var(--danger);
   color: #fff;
 }
+.titlebar-btn-editor {
+  font-size: 13px;
+  opacity: 0.8;
+}
+.titlebar-btn-editor-hidden {
+  color: var(--accent);
+  opacity: 1;
+}
 
 /* ===== UI primitives ===== */
 .ui-input {

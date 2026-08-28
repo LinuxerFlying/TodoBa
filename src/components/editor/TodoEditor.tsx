@@ -8,6 +8,7 @@ import { useDebounce } from '../../hooks/useDebounce';
 import { formatDateTime } from '../../lib/date';
 import { Button } from '../ui/Button';
 import { Modal } from '../ui/Modal';
+import { useUiStore } from '../../store/useUiStore';
 import toast from 'react-hot-toast';
 
 export function TodoEditor() {
@@ -17,6 +18,7 @@ export function TodoEditor() {
   const remove = useTodoStore((s) => s.remove);
   const select = useTodoStore((s) => s.select);
   const restore = useTodoStore((s) => s.restore);
+  const toggleEditor = useUiStore((s) => s.toggleEditor);
 
   const todo = selectedId ? todos[selectedId] : null;
   const [draft, setDraft] = useState<Todo | null>(null);
@@ -110,6 +112,13 @@ export function TodoEditor() {
             创建 {formatDateTime(todo.created)} · 更新 {formatDateTime(todo.updated)}
           </div>
           <div style={{ display: 'flex', gap: 6 }}>
+            <button
+              className="editor-hide-btn"
+              onClick={toggleEditor}
+              title="隐藏编辑面板"
+            >
+              ▸ 隐藏
+            </button>
             <button
               className="editor-history-btn"
               onClick={() => setHistoryOpen(true)}

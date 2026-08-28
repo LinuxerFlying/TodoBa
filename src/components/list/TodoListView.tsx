@@ -52,6 +52,13 @@ export function TodoListView() {
   const filters = useUiStore((s) => s.listFilters);
   const setSort = useUiStore((s) => s.setListSort);
   const reset = useUiStore((s) => s.resetListControls);
+  const editorOpen = useUiStore((s) => s.editorOpen);
+  const toggleEditor = useUiStore((s) => s.toggleEditor);
+
+  const handleDoubleClick = (id: string) => {
+    select(id);
+    if (!editorOpen) toggleEditor();
+  };
 
   const total = useMemo(
     () =>
@@ -137,6 +144,7 @@ export function TodoListView() {
                   key={t.id}
                   className={cx(selectedId === t.id && 'selected')}
                   onClick={() => select(t.id)}
+                  onDoubleClick={() => handleDoubleClick(t.id)}
                 >
                   <td>
                     <span className={cx('list-title', t.status === 'done' && 'done')}>

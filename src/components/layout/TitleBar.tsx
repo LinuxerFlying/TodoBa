@@ -1,8 +1,11 @@
 import { useEffect, useState } from 'react';
 import { cx } from '../../lib/classnames';
+import { useUiStore } from '../../store/useUiStore';
 
 export function TitleBar() {
   const [maximized, setMaximized] = useState(false);
+  const editorOpen = useUiStore((s) => s.editorOpen);
+  const toggleEditor = useUiStore((s) => s.toggleEditor);
 
   useEffect(() => {
     window.api.window.isMaximized().then(setMaximized);
@@ -22,6 +25,13 @@ export function TitleBar() {
         <span className="titlebar-version">v0.1.0</span>
       </div>
       <div className="titlebar-controls">
+        <button
+          className={cx('titlebar-btn', 'titlebar-btn-editor', !editorOpen && 'titlebar-btn-editor-hidden')}
+          title={editorOpen ? '隐藏编辑面板' : '显示编辑面板'}
+          onClick={toggleEditor}
+        >
+          ▮
+        </button>
         <button
           className="titlebar-btn"
           title="最小化"

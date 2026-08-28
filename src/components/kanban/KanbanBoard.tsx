@@ -41,6 +41,8 @@ export function KanbanBoard() {
   const search = useUiStore((s) => s.searchQuery);
   const activeTag = useUiStore((s) => s.activeTag);
   const showArchived = useUiStore((s) => s.showArchived);
+  const editorOpen = useUiStore((s) => s.editorOpen);
+  const toggleEditor = useUiStore((s) => s.toggleEditor);
 
   const [activeId, setActiveId] = useState<string | null>(null);
 
@@ -90,6 +92,11 @@ export function KanbanBoard() {
 
   const activeTodo = activeId ? todos[activeId] : null;
 
+  const handleCardDoubleClick = (id: string) => {
+    select(id);
+    if (!editorOpen) toggleEditor();
+  };
+
   return (
     <DndContext
       sensors={sensors}
@@ -113,6 +120,7 @@ export function KanbanBoard() {
               todos={grouped[q]}
               selectedId={selectedId}
               onSelect={select}
+              onDoubleClick={handleCardDoubleClick}
             />
           ))}
         </div>

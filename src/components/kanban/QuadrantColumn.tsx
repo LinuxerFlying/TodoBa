@@ -9,9 +9,10 @@ interface Props {
   todos: Todo[];
   selectedId: string | null;
   onSelect: (id: string) => void;
+  onDoubleClick?: (id: string) => void;
 }
 
-export function QuadrantColumn({ q, todos, selectedId, onSelect }: Props) {
+export function QuadrantColumn({ q, todos, selectedId, onSelect, onDoubleClick }: Props) {
   const { setNodeRef, isOver } = useDroppable({ id: q });
   const info = QUADRANT_LABELS[q];
 
@@ -36,6 +37,7 @@ export function QuadrantColumn({ q, todos, selectedId, onSelect }: Props) {
               todo={t}
               selected={selectedId === t.id}
               onClick={() => onSelect(t.id)}
+              onDoubleClick={onDoubleClick ? () => onDoubleClick(t.id) : undefined}
             />
           ))
         )}

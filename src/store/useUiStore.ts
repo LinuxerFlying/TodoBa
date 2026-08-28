@@ -30,6 +30,7 @@ interface UiState {
   activeTag: string | null;
   showArchived: boolean;
   sidebarOpen: boolean;
+  editorOpen: boolean;
   listSort: { field: SortField; dir: SortDir };
   listFilters: ListFilters;
   setView: (v: ViewMode) => void;
@@ -37,6 +38,7 @@ interface UiState {
   setActiveTag: (t: string | null) => void;
   toggleArchived: () => void;
   toggleSidebar: () => void;
+  toggleEditor: () => void;
   setListSort: (field: SortField) => void;
   setListFilter: <K extends FilterKey>(key: K, values: ListFilters[K]) => void;
   resetListControls: () => void;
@@ -53,6 +55,7 @@ export const useUiStore = create<UiState>()(
       activeTag: null,
       showArchived: false,
       sidebarOpen: true,
+      editorOpen: true,
       listSort: DEFAULT_SORT,
       listFilters: DEFAULT_FILTERS,
       setView: (v) => set({ view: v }),
@@ -60,6 +63,7 @@ export const useUiStore = create<UiState>()(
       setActiveTag: (t) => set({ activeTag: t }),
       toggleArchived: () => set((s) => ({ showArchived: !s.showArchived })),
       toggleSidebar: () => set((s) => ({ sidebarOpen: !s.sidebarOpen })),
+      toggleEditor: () => set((s) => ({ editorOpen: !s.editorOpen })),
       setListSort: (field) =>
         set((s) => {
           if (field === 'smart') return { listSort: { field: 'smart', dir: 'asc' } };

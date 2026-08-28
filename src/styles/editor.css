@@ -152,6 +152,19 @@
   background: var(--bg-hover);
   color: var(--accent);
 }
+.editor-hide-btn {
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: 12px;
+  padding: 3px 8px;
+  border-radius: var(--radius-sm);
+}
+.editor-hide-btn:hover {
+  background: var(--bg-hover);
+  color: var(--accent);
+}
 
 /* Markdown editor split */
 .md-editor {
