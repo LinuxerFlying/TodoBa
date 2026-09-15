@@ -4,6 +4,8 @@ import path from 'node:path';
 import { registerTodosIpc } from './ipc/todos';
 import { registerSettingsIpc, getSettings } from './ipc/settings';
 import { registerAssetsIpc } from './ipc/assets';
+import { registerSyncIpc } from './ipc/sync';
+import { syncEngine } from './services/sync-engine';
 import { vaultWatcher } from './services/file-watcher';
 import fsp from 'node:fs/promises';
 
@@ -55,6 +57,7 @@ ipcMain.handle('window:close', () => {
 registerSettingsIpc();
 registerTodosIpc();
 registerAssetsIpc();
+registerSyncIpc();
 
 async function ensureDefaultVault() {
   const { vaultPath } = getSettings();
@@ -152,6 +155,7 @@ app.whenReady().then(async () => {
   const vaultPath = await ensureDefaultVault();
   registerAssetProtocol();
   vaultWatcher.start(vaultPath);
+  syncEngine.refreshConfigState();
   createWindow();
 });
 

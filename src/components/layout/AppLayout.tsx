@@ -4,6 +4,7 @@ import { KanbanBoard } from '../kanban/KanbanBoard';
 import { TodoEditor } from '../editor/TodoEditor';
 import { TodoListView } from '../list/TodoListView';
 import { useUiStore } from '../../store/useUiStore';
+import { SyncModal } from '../settings/SyncModal';
 import { Toaster } from 'react-hot-toast';
 
 export function AppLayout() {
@@ -18,6 +19,7 @@ export function AppLayout() {
           {view === 'kanban' ? <KanbanBoard /> : <TodoListView />}
         </main>
         {editorOpen && <TodoEditor />}
+        <SyncModal />
       </div>
       <Toaster
         position="bottom-right"

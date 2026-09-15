@@ -2,12 +2,13 @@ import { useEffect } from 'react';
 import { AppLayout } from './components/layout/AppLayout';
 import { useSettingsStore } from './store/useSettingsStore';
 import { useTodoStore } from './store/useTodoStore';
-import type { Todo } from './types/todo';
+import { useSyncStore } from './store/useSyncStore';
 import { useHotkeys } from './hooks/useHotkeys';
 import toast from 'react-hot-toast';
 
 function App() {
   const initSettings = useSettingsStore((s) => s.init);
+  const initSync = useSyncStore((s) => s.init);
   const loadAll = useTodoStore((s) => s.loadAll);
   const upsertOne = useTodoStore((s) => s.upsertOne);
   const removeOne = useTodoStore((s) => s.removeOne);
@@ -18,8 +19,10 @@ function App() {
 
   useEffect(() => {
     let offChanges: (() => void) | null = null;
+    let offPulled: (() => void) | null = null;
     (async () => {
       await initSettings();
+      await initSync().catch(() => undefined);
       try {
         await loadAll();
       } catch (e) {
@@ -31,11 +34,15 @@ function App() {
         if (p.type === 'unlink') removeOne(p.id);
         else reloadOne(p.id);
       }) as () => void;
+      offPulled = window.api.sync.onPulled(() => {
+        loadAll().catch((e) => toast.error('同步后刷新失败：' + String(e)));
+      }) as () => void;
     })();
     return () => {
       offChanges?.();
+      offPulled?.();
     };
-  }, [initSettings, loadAll, upsertOne, removeOne, reloadOne]);
+  }, [initSettings, initSync, loadAll, upsertOne, removeOne, reloadOne]);
 
   useEffect(() => {
     if (error) toast.error(error);

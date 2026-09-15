@@ -4,6 +4,7 @@ import { SearchBar } from './SearchBar';
 import { TagList } from './TagList';
 import { ThemeSelector } from '../settings/ThemeSelector';
 import { VaultPathSetting } from '../settings/VaultPathSetting';
+import { SyncSetting } from '../settings/SyncSetting';
 import { cx } from '../../lib/classnames';
 import toast from 'react-hot-toast';
 
@@ -58,6 +59,8 @@ export function Sidebar() {
           <ThemeSelector />
           <div className="sidebar-divider" />
           <VaultPathSetting />
+          <div className="sidebar-divider" />
+          <SyncSetting />
         </div>
       </aside>
       <button
