@@ -8,6 +8,7 @@ import './styles/kanban.css';
 import './styles/editor.css';
 import './styles/datepicker.css';
 import './styles/list.css';
+import './styles/sync.css';
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>

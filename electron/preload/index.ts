@@ -34,6 +34,31 @@ const api = {
   assets: {
     import: () => ipcRenderer.invoke('assets:import')
   },
+  sync: {
+    getConfig: () => ipcRenderer.invoke('sync:getConfig'),
+    saveConfig: (config: unknown) => ipcRenderer.invoke('sync:saveConfig', config),
+    testConnection: (config: unknown) =>
+      ipcRenderer.invoke('sync:testConnection', config),
+    push: () => ipcRenderer.invoke('sync:push'),
+    pull: () => ipcRenderer.invoke('sync:pull'),
+    getState: () => ipcRenderer.invoke('sync:getState'),
+    setAuto: (enabled: boolean) => ipcRenderer.invoke('sync:setAuto', { enabled }),
+    onProgress: (cb: (payload: unknown) => void) => {
+      const handler = (_e: unknown, payload: unknown) => cb(payload);
+      ipcRenderer.on('sync:progress', handler);
+      return () => ipcRenderer.removeListener('sync:progress', handler);
+    },
+    onPulled: (cb: (payload: unknown) => void) => {
+      const handler = (_e: unknown, payload: unknown) => cb(payload);
+      ipcRenderer.on('sync:pulled', handler);
+      return () => ipcRenderer.removeListener('sync:pulled', handler);
+    },
+    onState: (cb: (payload: unknown) => void) => {
+      const handler = (_e: unknown, payload: unknown) => cb(payload);
+      ipcRenderer.on('sync:state', handler);
+      return () => ipcRenderer.removeListener('sync:state', handler);
+    }
+  },
   window: {
     minimize: () => ipcRenderer.invoke('window:minimize'),
     maximize: () => ipcRenderer.invoke('window:maximize'),
