@@ -4,11 +4,13 @@ import { useUiStore } from '../../store/useUiStore';
 
 export function TitleBar() {
   const [maximized, setMaximized] = useState(false);
+  const [version, setVersion] = useState('');
   const editorOpen = useUiStore((s) => s.editorOpen);
   const toggleEditor = useUiStore((s) => s.toggleEditor);
 
   useEffect(() => {
     window.api.window.isMaximized().then(setMaximized);
+    window.api.appVersion().then((v) => setVersion('v' + v));
   }, []);
 
   const handleMax = async () => {
@@ -22,7 +24,7 @@ export function TitleBar() {
       <div className="titlebar-brand">
         <span className="titlebar-logo">✓</span>
         <span className="titlebar-name">TodoBa</span>
-        <span className="titlebar-version">v0.1.0</span>
+        <span className="titlebar-version">{version}</span>
       </div>
       <div className="titlebar-controls">
         <button

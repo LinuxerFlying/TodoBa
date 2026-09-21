@@ -1,6 +1,6 @@
 # TodoBa
 
-> v0.1.0 · 印象笔记风格的 Markdown 待办管理工具 — 四象限看板 · Markdown 存储 · 多主题
+> v0.4.0 · 印象笔记风格的 Markdown 待办管理工具 — 四象限看板 · Markdown 存储 · 多主题
 
 ![technology](https://img.shields.io/badge/Electron-33-47848F) ![react](https://img.shields.io/badge/React-18-61DAFB) ![typescript](https://img.shields.io/badge/TypeScript-5-3178C6)
 

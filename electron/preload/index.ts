@@ -2,6 +2,7 @@ import { contextBridge, ipcRenderer } from 'electron';
 
 const api = {
   ping: () => ipcRenderer.invoke('ping'),
+  appVersion: () => ipcRenderer.invoke('app:version'),
   todos: {
     list: () => ipcRenderer.invoke('todos:list'),
     read: (id: string) => ipcRenderer.invoke('todos:read', { id }),

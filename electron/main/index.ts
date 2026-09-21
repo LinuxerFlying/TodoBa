@@ -38,6 +38,7 @@ process.env.VITE_PUBLIC = VITE_DEV_SERVER_URL
 let win: BrowserWindow | null = null;
 
 ipcMain.handle('ping', () => 'pong from TodoBa main process');
+ipcMain.handle('app:version', () => app.getVersion());
 
 ipcMain.handle('window:minimize', () => {
   BrowserWindow.getFocusedWindow()?.minimize();
