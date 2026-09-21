@@ -9,15 +9,13 @@ import { formatDateTime } from '../../lib/date';
 import { Button } from '../ui/Button';
 import { Modal } from '../ui/Modal';
 import { useUiStore } from '../../store/useUiStore';
-import toast from 'react-hot-toast';
+import { deleteTodoWithUndo } from '../../lib/todo-menu';
 
 export function TodoEditor() {
   const selectedId = useTodoStore((s) => s.selectedId);
   const todos = useTodoStore((s) => s.todos);
   const update = useTodoStore((s) => s.update);
-  const remove = useTodoStore((s) => s.remove);
   const select = useTodoStore((s) => s.select);
-  const restore = useTodoStore((s) => s.restore);
   const toggleEditor = useUiStore((s) => s.toggleEditor);
 
   const todo = selectedId ? todos[selectedId] : null;
@@ -76,31 +74,7 @@ export function TodoEditor() {
 
   const handleDelete = async () => {
     setConfirmDelete(false);
-    const backup = { ...todo };
-    await remove(todo.id);
-    toast((t) => (
-      <span>
-        已删除「{backup.title}」
-        <button
-          style={{
-            marginLeft: 10,
-            background: 'var(--accent)',
-            color: 'var(--accent-fg)',
-            border: 'none',
-            padding: '3px 10px',
-            borderRadius: 4,
-            cursor: 'pointer'
-          }}
-          onClick={() => {
-            restore(backup);
-            toast.dismiss(t.id);
-            toast.success('已撤销删除');
-          }}
-        >
-          撤销
-        </button>
-      </span>
-    ), { duration: 5000 });
+    await deleteTodoWithUndo(todo);
   };
 
   return (

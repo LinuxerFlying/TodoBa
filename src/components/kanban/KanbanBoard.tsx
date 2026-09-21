@@ -12,6 +12,8 @@ import {
 import { useState } from 'react';
 import { QuadrantColumn } from './QuadrantColumn';
 import { TodoCard } from './TodoCard';
+import { useContextMenu } from '../ui/ContextMenu';
+import { buildTodoMenuItems } from '../../lib/todo-menu';
 import { useTodoStore } from '../../store/useTodoStore';
 import { useUiStore } from '../../store/useUiStore';
 import type { Quadrant, Todo } from '../../types/todo';
@@ -45,6 +47,13 @@ export function KanbanBoard() {
   const toggleEditor = useUiStore((s) => s.toggleEditor);
 
   const [activeId, setActiveId] = useState<string | null>(null);
+  const ctx = useContextMenu();
+
+  const handleCardContextMenu = (e: React.MouseEvent, todo: Todo) => {
+    e.preventDefault();
+    select(todo.id);
+    ctx.open(e.clientX, e.clientY, buildTodoMenuItems(todo));
+  };
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 5 } })
@@ -121,6 +130,7 @@ export function KanbanBoard() {
               selectedId={selectedId}
               onSelect={select}
               onDoubleClick={handleCardDoubleClick}
+              onContextMenu={handleCardContextMenu}
             />
           ))}
         </div>
@@ -153,6 +163,7 @@ export function KanbanBoard() {
           </div>
         ) : null}
       </DragOverlay>
+      {ctx.menu}
     </DndContext>
   );
 }

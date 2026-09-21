@@ -7,6 +7,8 @@ import { cx } from '../../lib/classnames';
 import { formatDate, isOverdue } from '../../lib/date';
 import { compareTodos, hasActiveFilters, matchesListFilters } from '../../lib/sort';
 import { ListToolbar } from './ListToolbar';
+import { useContextMenu } from '../ui/ContextMenu';
+import { buildTodoMenuItems } from '../../lib/todo-menu';
 
 function matchesSearch(t: Todo, q: string, tag: string | null, showArchived: boolean) {
   if (!showArchived && t.status === 'archived') return false;
@@ -58,6 +60,14 @@ export function TodoListView() {
   const handleDoubleClick = (id: string) => {
     select(id);
     if (!editorOpen) toggleEditor();
+  };
+
+  const ctx = useContextMenu();
+
+  const handleRowContextMenu = (e: React.MouseEvent, todo: Todo) => {
+    e.preventDefault();
+    select(todo.id);
+    ctx.open(e.clientX, e.clientY, buildTodoMenuItems(todo));
   };
 
   const total = useMemo(
@@ -145,6 +155,7 @@ export function TodoListView() {
                   className={cx(selectedId === t.id && 'selected')}
                   onClick={() => select(t.id)}
                   onDoubleClick={() => handleDoubleClick(t.id)}
+                  onContextMenu={(e) => handleRowContextMenu(e, t)}
                 >
                   <td>
                     <span className={cx('list-title', t.status === 'done' && 'done')}>
@@ -209,6 +220,7 @@ export function TodoListView() {
           <div className="list-footer-hint">筛选后 {list.length} / 共 {total} 条</div>
         )}
       </div>
+      {ctx.menu}
     </div>
   );
 }

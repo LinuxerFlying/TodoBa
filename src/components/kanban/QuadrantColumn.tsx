@@ -10,9 +10,10 @@ interface Props {
   selectedId: string | null;
   onSelect: (id: string) => void;
   onDoubleClick?: (id: string) => void;
+  onContextMenu?: (e: React.MouseEvent, todo: Todo) => void;
 }
 
-export function QuadrantColumn({ q, todos, selectedId, onSelect, onDoubleClick }: Props) {
+export function QuadrantColumn({ q, todos, selectedId, onSelect, onDoubleClick, onContextMenu }: Props) {
   const { setNodeRef, isOver } = useDroppable({ id: q });
   const info = QUADRANT_LABELS[q];
 
@@ -38,6 +39,7 @@ export function QuadrantColumn({ q, todos, selectedId, onSelect, onDoubleClick }
               selected={selectedId === t.id}
               onClick={() => onSelect(t.id)}
               onDoubleClick={onDoubleClick ? () => onDoubleClick(t.id) : undefined}
+              onContextMenu={onContextMenu ? (e) => onContextMenu(e, t) : undefined}
             />
           ))
         )}

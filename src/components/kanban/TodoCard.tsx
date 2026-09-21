@@ -10,6 +10,7 @@ interface Props {
   selected?: boolean;
   onClick?: () => void;
   onDoubleClick?: () => void;
+  onContextMenu?: (e: React.MouseEvent) => void;
 }
 
 function StatusIcon({ status }: { status: Todo['status'] }) {
@@ -25,7 +26,7 @@ function PriorityDot({ priority }: { priority: Todo['priority'] }) {
   return <span className={cx('priority-dot', `p-${priority}`)} title={priority} />;
 }
 
-export function TodoCard({ todo, selected, onClick, onDoubleClick }: Props) {
+export function TodoCard({ todo, selected, onClick, onDoubleClick, onContextMenu }: Props) {
   const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
     id: todo.id,
     data: { quadrant: todo.quadrant }
@@ -50,6 +51,7 @@ export function TodoCard({ todo, selected, onClick, onDoubleClick }: Props) {
       data-status={todo.status}
       onClick={onClick}
       onDoubleClick={onDoubleClick}
+      onContextMenu={onContextMenu}
       {...listeners}
       {...attributes}
     >
