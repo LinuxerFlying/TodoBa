@@ -55,7 +55,7 @@ export const useUiStore = create<UiState>()(
       activeTag: null,
       showArchived: false,
       sidebarOpen: true,
-      editorOpen: true,
+      editorOpen: false,
       listSort: DEFAULT_SORT,
       listFilters: DEFAULT_FILTERS,
       setView: (v) => set({ view: v }),

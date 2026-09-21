@@ -142,10 +142,19 @@ export class WebDAVClient {
       },
       timeoutMs: 60000
     });
-    if (!res.ok) {
-      await this.delete(tmp).catch(() => undefined);
-      throw new WebDAVError('MOVE', res.status, `提交文件失败（${res.status}）`);
+    if (res.ok) return;
+
+    if (res.status === 409 || res.status === 412 || res.status === 403) {
+      try {
+        await this.put(relPath, data);
+        return;
+      } finally {
+        await this.delete(tmp).catch(() => undefined);
+      }
     }
+
+    await this.delete(tmp).catch(() => undefined);
+    throw new WebDAVError('MOVE', res.status, `提交文件失败（${res.status}）`);
   }
 
   async delete(relPath: string): Promise<void> {

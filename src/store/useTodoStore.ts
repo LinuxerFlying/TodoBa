@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import type { Todo, Quadrant } from '../types/todo';
+import { useUiStore } from './useUiStore';
 
 interface TodoState {
   todos: Record<string, Todo>;
@@ -39,6 +40,7 @@ export const useTodoStore = create<TodoState>((set, get) => ({
   create: async (data) => {
     const todo = (await window.api.todos.create(data || {})) as Todo;
     set((s) => ({ todos: { ...s.todos, [todo.id]: todo }, selectedId: todo.id }));
+    useUiStore.setState({ editorOpen: true });
     return todo;
   },
 
