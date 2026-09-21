@@ -5,6 +5,7 @@ import { TagList } from './TagList';
 import { ThemeSelector } from '../settings/ThemeSelector';
 import { VaultPathSetting } from '../settings/VaultPathSetting';
 import { SyncSetting } from '../settings/SyncSetting';
+import { UpdateSetting } from '../settings/UpdateSetting';
 import { cx } from '../../lib/classnames';
 import toast from 'react-hot-toast';
 
@@ -61,6 +62,8 @@ export function Sidebar() {
           <VaultPathSetting />
           <div className="sidebar-divider" />
           <SyncSetting />
+          <div className="sidebar-divider" />
+          <UpdateSetting />
         </div>
       </aside>
       <button

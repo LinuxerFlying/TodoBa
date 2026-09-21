@@ -65,6 +65,17 @@ const api = {
     maximize: () => ipcRenderer.invoke('window:maximize'),
     close: () => ipcRenderer.invoke('window:close'),
     isMaximized: () => ipcRenderer.invoke('window:isMaximized')
+  },
+  updater: {
+    getState: () => ipcRenderer.invoke('updater:getState'),
+    check: () => ipcRenderer.invoke('updater:check'),
+    download: () => ipcRenderer.invoke('updater:download'),
+    install: () => ipcRenderer.invoke('updater:install'),
+    onChange: (cb: (payload: unknown) => void) => {
+      const handler = (_e: unknown, payload: unknown) => cb(payload);
+      ipcRenderer.on('updater:state', handler);
+      return () => ipcRenderer.removeListener('updater:state', handler);
+    }
   }
 };
 

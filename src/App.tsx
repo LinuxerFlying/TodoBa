@@ -3,12 +3,14 @@ import { AppLayout } from './components/layout/AppLayout';
 import { useSettingsStore } from './store/useSettingsStore';
 import { useTodoStore } from './store/useTodoStore';
 import { useSyncStore } from './store/useSyncStore';
+import { useUpdaterStore } from './store/useUpdaterStore';
 import { useHotkeys } from './hooks/useHotkeys';
 import toast from 'react-hot-toast';
 
 function App() {
   const initSettings = useSettingsStore((s) => s.init);
   const initSync = useSyncStore((s) => s.init);
+  const initUpdater = useUpdaterStore((s) => s.init);
   const loadAll = useTodoStore((s) => s.loadAll);
   const upsertOne = useTodoStore((s) => s.upsertOne);
   const removeOne = useTodoStore((s) => s.removeOne);
@@ -23,6 +25,7 @@ function App() {
     (async () => {
       await initSettings();
       await initSync().catch(() => undefined);
+      await initUpdater().catch(() => undefined);
       try {
         await loadAll();
       } catch (e) {
@@ -42,7 +45,7 @@ function App() {
       offChanges?.();
       offPulled?.();
     };
-  }, [initSettings, initSync, loadAll, upsertOne, removeOne, reloadOne]);
+  }, [initSettings, initSync, initUpdater, loadAll, upsertOne, removeOne, reloadOne]);
 
   useEffect(() => {
     if (error) toast.error(error);

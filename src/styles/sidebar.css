@@ -298,3 +298,54 @@
 .search-clear:hover {
   background: var(--bg-hover);
 }
+
+/* Updater */
+.update-setting {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.update-status-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.update-progress {
+  height: 4px;
+  border-radius: 2px;
+  background: var(--bg-hover);
+  overflow: hidden;
+}
+.update-progress-bar {
+  height: 100%;
+  background: var(--accent);
+  border-radius: 2px;
+  transition: width 0.2s ease;
+}
+.update-primary-btn {
+  background: var(--accent);
+  color: var(--accent-fg);
+  border-color: var(--accent);
+}
+.update-primary-btn:hover {
+  opacity: 0.92;
+}
+.update-current-ver {
+  font-size: 11px;
+  color: var(--text-faint);
+}
+.update-notes {
+  margin: 0;
+  padding: 8px;
+  max-height: 140px;
+  overflow: auto;
+  font-family: var(--font);
+  font-size: 11px;
+  line-height: 1.5;
+  white-space: pre-wrap;
+  word-break: break-word;
+  background: var(--bg-hover);
+  border-radius: var(--radius-sm);
+  color: var(--text-muted);
+}

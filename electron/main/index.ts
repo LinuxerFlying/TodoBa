@@ -5,6 +5,8 @@ import { registerTodosIpc } from './ipc/todos';
 import { registerSettingsIpc, getSettings } from './ipc/settings';
 import { registerAssetsIpc } from './ipc/assets';
 import { registerSyncIpc } from './ipc/sync';
+import { registerUpdaterIpc } from './ipc/updater';
+import { initUpdater } from './services/updater';
 import { syncEngine } from './services/sync-engine';
 import { vaultWatcher } from './services/file-watcher';
 import fsp from 'node:fs/promises';
@@ -59,6 +61,7 @@ registerSettingsIpc();
 registerTodosIpc();
 registerAssetsIpc();
 registerSyncIpc();
+registerUpdaterIpc();
 
 async function ensureDefaultVault() {
   const { vaultPath } = getSettings();
@@ -158,6 +161,7 @@ app.whenReady().then(async () => {
   vaultWatcher.start(vaultPath);
   syncEngine.refreshConfigState();
   createWindow();
+  if (!VITE_DEV_SERVER_URL) initUpdater();
 });
 
 app.on('window-all-closed', () => {
