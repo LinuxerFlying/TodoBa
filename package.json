@@ -1,7 +1,7 @@
 {
   "name": "todoba",
   "productName": "TodoBa",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "description": "Evernote-style Markdown todo manager with Eisenhower-matrix kanban and multi-theme support",
   "main": "out/main/index.js",
   "author": "TodoBa",

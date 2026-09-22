@@ -2,13 +2,25 @@ import { ipcMain } from 'electron';
 import { WebDAVClient } from '../services/webdav-client';
 import { syncEngine, type SyncResult } from '../services/sync-engine';
 import {
+  checkVerifier,
+  generateSalt,
+  makeVerifier
+} from '../services/crypto-vault';
+import {
+  disableEncryptionStorage,
   getConfig,
+  getEncryptionSettings,
+  getEncSalt,
+  getEncVerifier,
   getLastDirection,
   getLastSyncAt,
   getSafeConfig,
   isSyncConfigured,
+  lockEncryption,
   saveConfig,
+  saveEncryptionSetup,
   setAutoSync,
+  setMemoryEncPassword,
   type SyncProvider
 } from '../services/sync-store';
 
@@ -89,4 +101,103 @@ export function registerSyncIpc() {
     lastSyncAt: getLastSyncAt(),
     lastDirection: getLastDirection()
   }));
+
+  ipcMain.handle('sync:encryption:getState', () => getEncryptionSettings());
+
+  ipcMain.handle(
+    'sync:encryption:enable',
+    async (
+      _e,
+      input: { password: string; remember: boolean }
+    ): Promise<{ ok: boolean; error?: string }> => {
+      const password = (input?.password || '').trim();
+      if (password.length < 6) return { ok: false, error: '加密密码至少 6 位' };
+      try {
+        const salt = generateSalt();
+        const verifier = makeVerifier(password, salt);
+        saveEncryptionSetup({
+          salt: salt.toString('hex'),
+          verifier,
+          password,
+          remember: Boolean(input?.remember)
+        });
+        if (isSyncConfigured()) {
+          const r = await syncEngine.run('push');
+          if (!r.ok) return { ok: false, error: r.error || '加密后重传失败' };
+        }
+        return { ok: true };
+      } catch (e) {
+        return { ok: false, error: e instanceof Error ? e.message : String(e) };
+      }
+    }
+  );
+
+  ipcMain.handle(
+    'sync:encryption:disable',
+    async (): Promise<{ ok: boolean; error?: string }> => {
+      try {
+        disableEncryptionStorage();
+        if (isSyncConfigured()) {
+          const r = await syncEngine.run('push');
+          if (!r.ok) return { ok: false, error: r.error || '明文回迁失败' };
+        }
+        return { ok: true };
+      } catch (e) {
+        return { ok: false, error: e instanceof Error ? e.message : String(e) };
+      }
+    }
+  );
+
+  ipcMain.handle(
+    'sync:encryption:unlock',
+    (
+      _e,
+      input: { password: string }
+    ): { ok: boolean; error?: string } => {
+      const password = (input?.password || '').trim();
+      const verifier = getEncVerifier();
+      const salt = getEncSalt();
+      if (!verifier || !salt) return { ok: false, error: '加密尚未初始化' };
+      if (!checkVerifier(verifier, password)) {
+        return { ok: false, error: '加密密码不正确' };
+      }
+      setMemoryEncPassword(password);
+      return { ok: true };
+    }
+  );
+
+  ipcMain.handle('sync:encryption:lock', () => {
+    lockEncryption();
+    return { ok: true };
+  });
+
+  ipcMain.handle(
+    'sync:encryption:changePassword',
+    async (
+      _e,
+      input: { oldPassword: string; newPassword: string; remember: boolean }
+    ): Promise<{ ok: boolean; error?: string }> => {
+      const oldPassword = (input?.oldPassword || '').trim();
+      const newPassword = (input?.newPassword || '').trim();
+      if (newPassword.length < 6) return { ok: false, error: '新密码至少 6 位' };
+      const verifier = getEncVerifier();
+      if (!verifier || !checkVerifier(verifier, oldPassword)) {
+        return { ok: false, error: '原密码不正确' };
+      }
+      const salt = generateSalt();
+      const newVerifier = makeVerifier(newPassword, salt);
+      saveEncryptionSetup({
+        salt: salt.toString('hex'),
+        verifier: newVerifier,
+        password: newPassword,
+        remember: Boolean(input?.remember)
+      });
+      if (isSyncConfigured()) {
+        const r = await syncEngine.run('push');
+        if (!r.ok) return { ok: false, error: r.error || '改密后重传失败' };
+      }
+      return { ok: true };
+    }
+  );
+
 }

@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import toast from 'react-hot-toast';
 import { Modal } from '../ui/Modal';
+import { EncryptionPanel } from './EncryptionPanel';
 import { useSyncStore, type SafeSyncConfig, type SyncRunResult } from '../../store/useSyncStore';
 import { cx } from '../../lib/classnames';
 
@@ -55,6 +56,7 @@ export function SyncModal() {
   const progress = useSyncStore((s) => s.progress);
   const lastSyncAt = useSyncStore((s) => s.lastSyncAt);
   const refreshConfig = useSyncStore((s) => s.refreshConfig);
+  const refreshEncryption = useSyncStore((s) => s.refreshEncryption);
   const push = useSyncStore((s) => s.push);
   const pull = useSyncStore((s) => s.pull);
 
@@ -65,8 +67,9 @@ export function SyncModal() {
   useEffect(() => {
     if (open) {
       setDraft(toDraft(useSyncStore.getState().config));
+      refreshEncryption().catch(() => undefined);
     }
-  }, [open]);
+  }, [open, refreshEncryption]);
 
   const dirty = useMemo(() => {
     if (!config) return true;
@@ -322,6 +325,9 @@ export function SyncModal() {
             </button>
           </div>
         </div>
+
+        <div className="sync-divider" />
+        <EncryptionPanel />
       </div>
     </Modal>
   );

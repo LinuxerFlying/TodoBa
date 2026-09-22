@@ -53,6 +53,10 @@
   justify-content: space-between;
   padding: 14px 18px;
   border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background: var(--bg-card);
 }
 .sync-modal-title {
   font-size: 15px;
@@ -167,4 +171,68 @@
   height: 1px;
   background: var(--border);
   margin: 16px 0;
+}
+
+/* E2E encryption */
+.sync-encryption {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.sync-encryption-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.sync-encryption-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+}
+.sync-encryption-state {
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 10px;
+  background: var(--bg-hover);
+  color: var(--text-muted);
+}
+.sync-encryption-state.state-on {
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+.sync-encryption-state.state-locked {
+  background: var(--danger-soft);
+  color: var(--danger);
+}
+.sync-encryption-desc {
+  font-size: 12px;
+  line-height: 1.6;
+  color: var(--text-muted);
+}
+.sync-encryption-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.sync-encryption-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.sync-encryption-subform {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 12px;
+  border-radius: var(--radius-sm);
+  background: var(--bg-elev);
+  border: 1px solid var(--border);
+}
+.sync-remember-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--text-muted);
+  cursor: pointer;
 }

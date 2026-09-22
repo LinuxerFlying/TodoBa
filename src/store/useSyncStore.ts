@@ -32,6 +32,13 @@ export interface SyncRunResult {
   error?: string;
 }
 
+export interface EncryptionState {
+  enabled: boolean;
+  locked: boolean;
+  remembered: boolean;
+  salt: string;
+}
+
 interface SyncState {
   loaded: boolean;
   modalOpen: boolean;
@@ -43,9 +50,11 @@ interface SyncState {
   lastDirection: 'push' | 'pull' | '';
   progress: SyncProgressState | null;
   config: SafeSyncConfig | null;
+  encryption: EncryptionState | null;
 
   init: () => Promise<void>;
   refreshConfig: () => Promise<void>;
+  refreshEncryption: () => Promise<void>;
   openModal: () => void;
   closeModal: () => void;
   setAuto: (enabled: boolean) => Promise<void>;
@@ -77,6 +86,7 @@ export const useSyncStore = create<SyncState>((set, get) => ({
   lastDirection: '',
   progress: null,
   config: null,
+  encryption: null,
 
   init: () => {
     if (!initPromise) {
@@ -117,6 +127,9 @@ export const useSyncStore = create<SyncState>((set, get) => ({
         window.api.sync.onProgress((payload) => {
           set({ progress: payload as SyncProgressState });
         });
+
+        const enc = (await window.api.sync.encryption.getState()) as EncryptionState;
+        set({ encryption: enc });
       })();
     }
     return initPromise;
@@ -128,6 +141,11 @@ export const useSyncStore = create<SyncState>((set, get) => ({
   refreshConfig: async () => {
     const config = (await window.api.sync.getConfig()) as SafeSyncConfig;
     set({ config, configured: config.configured, auto: config.auto });
+  },
+
+  refreshEncryption: async () => {
+    const enc = (await window.api.sync.encryption.getState()) as EncryptionState;
+    set({ encryption: enc });
   },
 
   setAuto: async (enabled) => {

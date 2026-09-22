@@ -31,11 +31,19 @@ interface ConfigStoreShape {
   passwordPlain: string;
   remoteDir: string;
   auto: boolean;
+  encEnabled: boolean;
+  encSalt: string;
+  encVerifier: string;
+  encPasswordRemembered: string;
+  encLastRemoteSalt: string;
+  encIntent: 'on' | 'off' | null;
 }
 
 export interface SyncFileMeta {
   sha256: string;
   size: number;
+  enc?: boolean;
+  csha?: string;
 }
 
 export type RemoteManifest = Record<string, SyncFileMeta>;
@@ -56,7 +64,13 @@ const configStore = new Store<ConfigStoreShape>({
     passwordEnc: '',
     passwordPlain: '',
     remoteDir: 'TodoBa',
-    auto: false
+    auto: false,
+    encEnabled: false,
+    encSalt: '',
+    encVerifier: '',
+    encPasswordRemembered: '',
+    encLastRemoteSalt: '',
+    encIntent: null
   }
 });
 
@@ -169,4 +183,153 @@ export function saveSyncSnapshot(direction: 'push' | 'pull', remoteFiles: Remote
   stateStore.set('lastSyncAt', new Date().toISOString());
   stateStore.set('lastDirection', direction);
   stateStore.set('remoteFiles', remoteFiles);
+}
+
+export interface EncryptionSettings {
+  enabled: boolean;
+  locked: boolean;
+  remembered: boolean;
+  salt: string;
+}
+
+let memEncPassword: string | null = null;
+
+export function getEncSalt(): string {
+  return configStore.get('encSalt');
+}
+
+export function getEncVerifier(): string {
+  return configStore.get('encVerifier');
+}
+
+export function isEncryptionEnabled(): boolean {
+  return configStore.get('encEnabled');
+}
+
+export function getEncryptionSettings(): EncryptionSettings {
+  const enabled = configStore.get('encEnabled');
+  const remembered = Boolean(configStore.get('encPasswordRemembered'));
+  if (enabled && memEncPassword == null && remembered) {
+    tryRememberedPassword();
+  }
+  const locked = enabled && memEncPassword == null;
+  return {
+    enabled,
+    locked,
+    remembered,
+    salt: configStore.get('encSalt')
+  };
+}
+
+export function saveEncryptionSetup(setup: {
+  salt: string;
+  verifier: string;
+  password: string;
+  remember: boolean;
+}) {
+  let remembered = '';
+  if (setup.remember && safeStorage.isEncryptionAvailable()) {
+    remembered = safeStorage
+      .encryptString(setup.password)
+      .toString('base64');
+  }
+  configStore.set('encSalt', setup.salt);
+  configStore.set('encVerifier', setup.verifier);
+  configStore.set('encPasswordRemembered', remembered);
+  configStore.set('encEnabled', true);
+  configStore.set('encIntent', 'on');
+  memEncPassword = setup.password;
+}
+
+export function tryRememberedPassword(): string | null {
+  const enc = configStore.get('encPasswordRemembered');
+  if (!enc || !safeStorage.isEncryptionAvailable()) return null;
+  try {
+    const pw = safeStorage.decryptString(Buffer.from(enc, 'base64'));
+    memEncPassword = pw;
+    return pw;
+  } catch {
+    return null;
+  }
+}
+
+export function setMemoryEncPassword(pw: string) {
+  memEncPassword = pw;
+}
+
+export function lockEncryption() {
+  memEncPassword = null;
+}
+
+export function getMemoryEncPassword(): string | null {
+  return memEncPassword;
+}
+
+export function disableEncryptionStorage() {
+  configStore.set('encEnabled', false);
+  configStore.set('encPasswordRemembered', '');
+  configStore.set('encIntent', 'off');
+  memEncPassword = null;
+}
+
+export function updateRememberedPassword(password: string, remember: boolean) {
+  let remembered = '';
+  if (remember && safeStorage.isEncryptionAvailable()) {
+    remembered = safeStorage.encryptString(password).toString('base64');
+  }
+  configStore.set('encPasswordRemembered', remembered);
+}
+
+export interface RemoteEncryptionInfo {
+  enabled: boolean;
+  salt: string;
+  verifier: string;
+}
+
+export function reconcileEncryption(info: RemoteEncryptionInfo | null) {
+  const intent = configStore.get('encIntent');
+  const localEnabled = configStore.get('encEnabled');
+
+  if (!info || !info.enabled) {
+    if (!localEnabled) {
+      if (intent === null) return;
+      return;
+    }
+    if (intent === 'on') return;
+    const lastSalt = configStore.get('encLastRemoteSalt');
+    const localSalt = configStore.get('encSalt');
+    if (intent === 'off' && lastSalt === localSalt && localSalt !== '') {
+      configStore.set('encEnabled', false);
+      configStore.set('encPasswordRemembered', '');
+      configStore.set('encLastRemoteSalt', '');
+      configStore.set('encIntent', null);
+      memEncPassword = null;
+    }
+    return;
+  }
+
+  const remoteSalt = info.salt || '';
+  const localSalt = configStore.get('encSalt');
+  const seenSalt = configStore.get('encLastRemoteSalt');
+
+  if (intent === 'on') return;
+
+  if (intent === 'off') {
+    if (remoteSalt === localSalt && remoteSalt === seenSalt) return;
+  }
+
+  if (localEnabled && localSalt === remoteSalt && intent === null) return;
+
+  if (remoteSalt && remoteSalt !== seenSalt && remoteSalt !== localSalt) {
+    configStore.set('encEnabled', true);
+    if (info.salt) configStore.set('encSalt', info.salt);
+    if (info.verifier) configStore.set('encVerifier', info.verifier);
+    configStore.set('encIntent', null);
+    memEncPassword = null;
+  }
+}
+
+export function markEncryptionPushed(salt: string, enabled: boolean) {
+  configStore.set('encLastRemoteSalt', enabled ? salt : '');
+  configStore.set('encIntent', null);
 }

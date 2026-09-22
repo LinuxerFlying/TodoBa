@@ -7,12 +7,20 @@ import { WebDAVClient } from './webdav-client';
 import { saveVersion } from './history';
 import { vaultWatcher } from './file-watcher';
 import { getSettings } from '../ipc/settings';
+import { decryptBuffer, encryptBuffer } from './crypto-vault';
 import {
   getConfig,
   getDeviceId,
+  getEncSalt,
+  getEncVerifier,
+  getMemoryEncPassword,
   getRemoteFiles,
+  isEncryptionEnabled,
   isSyncConfigured,
+  markEncryptionPushed,
+  reconcileEncryption,
   saveSyncSnapshot,
+  tryRememberedPassword,
   type RemoteManifest,
   type SyncFileMeta
 } from './sync-store';
@@ -48,11 +56,18 @@ export interface SyncState {
   lastDirection: 'push' | 'pull' | '';
 }
 
+interface EncryptionSection {
+  enabled: boolean;
+  salt: string;
+  verifier: string;
+}
+
 interface ManifestDoc {
   version: number;
   deviceId: string;
   updatedAt: string;
   files: RemoteManifest;
+  encryption?: EncryptionSection;
 }
 
 function broadcast(channel: string, payload: unknown) {
@@ -113,6 +128,14 @@ async function readRemoteManifest(
   }
 }
 
+function currentEncryptionSection(): EncryptionSection {
+  return {
+    enabled: isEncryptionEnabled(),
+    salt: getEncSalt(),
+    verifier: getEncVerifier()
+  };
+}
+
 async function writeRemoteManifest(
   client: WebDAVClient,
   remoteDir: string,
@@ -122,7 +145,8 @@ async function writeRemoteManifest(
     version: 1,
     deviceId: getDeviceId(),
     updatedAt: new Date().toISOString(),
-    files
+    files,
+    encryption: currentEncryptionSection()
   };
   await client.putAtomic(`${remoteDir}/${MANIFEST_NAME}`, JSON.stringify(doc, null, 2));
 }
@@ -148,6 +172,15 @@ async function backupLocalFile(vaultDir: string, rel: string) {
 function isMarkdownId(rel: string): string | null {
   if (!rel.includes('/') && rel.endsWith('.md')) return rel.replace(/\.md$/, '');
   return null;
+}
+
+function resolveEncPassword(auto: boolean): string {
+  const mem = getMemoryEncPassword();
+  if (mem) return mem;
+  const remembered = tryRememberedPassword();
+  if (remembered) return remembered;
+  if (auto) return '';
+  throw new Error('加密已启用但尚未解锁，请先输入加密密码');
 }
 
 class SyncEngine {
@@ -253,16 +286,41 @@ class SyncEngine {
         scanLocalVault(vaultDir),
         readRemoteManifest(client, remoteDir)
       ]);
+
+      reconcileEncryption(manifest?.encryption ?? null);
+
+      if (isEncryptionEnabled()) {
+        const pw = resolveEncPassword(auto);
+        if (!pw) {
+          result.ok = true;
+          this.setState({ running: false, direction: '' });
+          return result;
+        }
+      }
+
       const R: RemoteManifest = { ...(manifest?.files || {}) };
       const P: RemoteManifest = getRemoteFiles();
 
       let newManifest = R;
       if (direction === 'push') {
-        newManifest = await this.push(client, vaultDir, remoteDir, local, R, P, result);
+        const remoteEncSalt = manifest?.encryption?.salt || '';
+        newManifest = await this.push(
+          client,
+          vaultDir,
+          remoteDir,
+          local,
+          R,
+          P,
+          result,
+          remoteEncSalt
+        );
       } else {
         await this.pull(client, vaultDir, remoteDir, local, R, P, result);
       }
       result.ok = true;
+      if (direction === 'push') {
+        markEncryptionPushed(getEncSalt(), isEncryptionEnabled());
+      }
       saveSyncSnapshot(direction, newManifest);
       this.progress({
         phase: 'done',
@@ -290,23 +348,39 @@ class SyncEngine {
     client: WebDAVClient,
     vaultDir: string,
     remoteDir: string,
-    local: Map<string, SyncFileMeta>,
+    local: Map<string,SyncFileMeta>,
     R: RemoteManifest,
     P: RemoteManifest,
-    result: SyncResult
+    result: SyncResult,
+    remoteEncSalt = ''
   ): Promise<RemoteManifest> {
+    const wantEnc = isEncryptionEnabled();
+    const encPassword = wantEnc ? getMemoryEncPassword() || tryRememberedPassword() || '' : '';
+    const localEncSalt = getEncSalt();
+    const encSalt = wantEnc ? Buffer.from(localEncSalt, 'hex') : Buffer.alloc(0);
+    const keyRotated = wantEnc && remoteEncSalt !== '' && remoteEncSalt !== localEncSalt;
+
     const toUpload: string[] = [];
     for (const [rel, meta] of local) {
-      if (R[rel]?.sha256 === meta.sha256) {
+      const r = R[rel];
+      const sameContent = r?.sha256 === meta.sha256;
+      const encMatch = (r?.enc ?? false) === wantEnc;
+      if (keyRotated) {
+        toUpload.push(rel);
+        continue;
+      }
+      if (sameContent && encMatch) {
         result.skipped++;
         continue;
       }
-      const remoteChanged = P[rel] && R[rel] && P[rel].sha256 !== R[rel].sha256;
-      const localChanged = !P[rel] || P[rel].sha256 !== meta.sha256;
-      if (remoteChanged && localChanged) {
-        result.conflicts++;
-        result.conflictFiles.push(rel);
-        continue;
+      if (!sameContent) {
+        const remoteChanged = P[rel] && R[rel] && P[rel].sha256 !== R[rel].sha256;
+        const localChanged = !P[rel] || P[rel].sha256 !== meta.sha256;
+        if (remoteChanged && localChanged) {
+          result.conflicts++;
+          result.conflictFiles.push(rel);
+          continue;
+        }
       }
       toUpload.push(rel);
     }
@@ -315,11 +389,23 @@ class SyncEngine {
     let done = 0;
     for (const rel of toUpload) {
       await client.ensureParentDirs(`${remoteDir}/${rel}`);
-      const data = await fsp.readFile(path.join(vaultDir, rel));
-      await client.put(`${remoteDir}/${rel}`, data);
+      const plain = await fsp.readFile(path.join(vaultDir, rel));
+      let outBuf: Buffer;
+      let csha: string | undefined;
+      if (wantEnc) {
+        outBuf = encryptBuffer(plain, encPassword, encSalt);
+        csha = sha256(outBuf);
+      } else {
+        outBuf = plain;
+      }
+      await client.put(`${remoteDir}/${rel}`, outBuf);
       const id = isMarkdownId(rel);
       if (id) vaultWatcher.markWrote(id);
-      R[rel] = { ...local.get(rel)! };
+      R[rel] = {
+        ...local.get(rel)!,
+        enc: wantEnc,
+        csha
+      };
       done++;
       result.transferred++;
       this.progress({ phase: 'upload', done, total: toUpload.length, direction: 'push' });
@@ -356,6 +442,13 @@ class SyncEngine {
     P: RemoteManifest,
     result: SyncResult
   ): Promise<void> {
+    const anyEncrypted = Object.values(R).some((m) => m.enc);
+    let encPassword = '';
+    if (anyEncrypted) {
+      encPassword = getMemoryEncPassword() || tryRememberedPassword() || '';
+      if (!encPassword) throw new Error('云端文件已加密，请先输入加密密码解锁');
+    }
+
     const toDownload: string[] = [];
     for (const rel of Object.keys(R)) {
       const localMeta = local.get(rel);
@@ -390,10 +483,16 @@ class SyncEngine {
       let done = 0;
       for (const rel of toDownload) {
         const buf = await client.getBuffer(`${remoteDir}/${rel}`);
+        let plain: Buffer;
+        if (R[rel].enc) {
+          plain = decryptBuffer(buf, encPassword);
+        } else {
+          plain = buf;
+        }
         if (result.conflictFiles.includes(rel) && local.has(rel)) {
           await backupLocalFile(vaultDir, rel);
         }
-        await writeLocalAtomic(path.join(vaultDir, rel), buf);
+        await writeLocalAtomic(path.join(vaultDir, rel), plain);
         const id = isMarkdownId(rel);
         if (id) vaultWatcher.markWrote(id);
         done++;

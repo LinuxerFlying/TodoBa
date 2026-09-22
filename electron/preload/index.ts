@@ -58,6 +58,25 @@ const api = {
       const handler = (_e: unknown, payload: unknown) => cb(payload);
       ipcRenderer.on('sync:state', handler);
       return () => ipcRenderer.removeListener('sync:state', handler);
+    },
+    encryption: {
+      getState: () => ipcRenderer.invoke('sync:encryption:getState'),
+      enable: (password: string, remember: boolean) =>
+        ipcRenderer.invoke('sync:encryption:enable', { password, remember }),
+      disable: () => ipcRenderer.invoke('sync:encryption:disable'),
+      unlock: (password: string) =>
+        ipcRenderer.invoke('sync:encryption:unlock', { password }),
+      lock: () => ipcRenderer.invoke('sync:encryption:lock'),
+      changePassword: (
+        oldPassword: string,
+        newPassword: string,
+        remember: boolean
+      ) =>
+        ipcRenderer.invoke('sync:encryption:changePassword', {
+          oldPassword,
+          newPassword,
+          remember
+        })
     }
   },
   window: {
